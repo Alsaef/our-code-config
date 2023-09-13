@@ -13,10 +13,10 @@ const useAdmin = () => {
     queryKey:['isAdmin',user?.email],
     queryFn: async()=>{
         const res = await axiosSecure.get(`/users/admin/${user?.email}`);// Use Your Api     
-        return res.data
+        return res.data.admin
     }
   })
-     return [isAdmin]
+     return isAdmin
 };
 
 export default useAdmin;
