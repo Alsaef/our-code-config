@@ -1,4 +1,4 @@
-   app.get('/users/admin/:email',async(req,res)=>{
+   app.get('/users/admin/:email',verify,async(req,res)=>{
       const email = req.params.email;
       const query={email: email}
       const user= await usersCallections.findOne(query)
