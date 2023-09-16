@@ -12,7 +12,7 @@ const ImageApi=`https://api.imgbb.com/1/upload?key=${ImageHosting}`// add your a
         if(imageResponse.success){
           const ImageUrl=imageResponse.data.display_url
           const {name,category,price,recipe}=data
-          const menuItem={name,category,price,recipe,image:ImageUrl}
+          const menuItem={name,category,price:parseFloat(price),recipe,image:ImageUrl}
          console.log(menuItem)
         }
       })
