@@ -1,4 +1,4 @@
- imageUrls:{
+ imageUrls:[{
      type:String,
      require:true,
      validate:{
@@ -16,4 +16,4 @@
       },
       message:'validate url'
      }
-    },
+    }],
