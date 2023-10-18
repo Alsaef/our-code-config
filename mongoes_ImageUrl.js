@@ -12,7 +12,7 @@
               isValid= false
             } 
         });
-        return isValid=true
+        return isValid
       },
       message:'validate url'
      }
