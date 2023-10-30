@@ -1,24 +1,30 @@
-const multer = require('multer');
-const path = require('path');
+const multer= require('multer')
+const path=require('path')
 
-// Define the destination directory for uploaded files.
-const destination = path.join(__dirname, 'images'); // Use an absolute path
-
-const uploader = multer({
-  dest: destination, // Set the destination for uploaded files
-  fileFilter: (req, file, cb) => {
-    const supportedImg = /png|jpg/;
-    const extension = path.extname(file.originalname);
-
-    if (supportedImg.test(extension)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Upload only PNG or JPG images'));
+const storage=multer.diskStorage({
+    destination:'images/',
+    filename:(req,file,cb)=>{
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, file.fieldname + '-' + uniqueSuffix)
     }
-  },
-  limits: {
-    fileSize: 5242880, // 5 MB in bytes
-  },
-});
+})
 
-module.exports = uploader;
+const uploder=multer({
+    storage:storage,
+    fileFilter:(req,file,cb)=>{
+        const suportedImg=/PNG|JPG/;
+        const extantion=path.extname(file.originalname);
+
+        if (suportedImg.test(extantion)) {
+            cb(null,true)
+        } else {
+            cb(new Error('uplode png jpg image'))
+        }
+    },
+    limits: {
+        fileSize: 5242880,
+      },
+
+})
+
+module.exports=uploder;
