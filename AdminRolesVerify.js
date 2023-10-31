@@ -1,7 +1,7 @@
 // verify Admin
     // use mongoDB
     const verifyAdmin= async(req,res,next)=>{
-       const email=req.params.email;
+       const email=req.decoded.email;
        const query={email: email}
        const user= await usersCallections.findOne(query)
       if (user?.role !== "admin") {
