@@ -74,23 +74,44 @@ app.post('/api/v1/register', async (req, res) => {
 
 // 
 
-otp verifyed code patch
-
+// Verify OTP and complete registration
 app.post('/api/v1/verify-otp', async (req, res) => {
-  const { userId, otp } = req.body;
+  const { email, otp } = req.body;
 
-  // Find user by ID
-  const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-  if (!user) return res.status(400).send({ message: 'User not found' });
+  const storedOtpInfo = otpStore[email];
+  if (!storedOtpInfo) {
+    return res.status(400).send({ message: 'OTP not found or expired' });
+  }
 
-  // Check if OTP is valid and not expired
-  if (user.otp === otp && user.otpExpiresAt > Date.now()) {
-    await usersCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: { isVerified: true }, $unset: { otp: "", otpExpiresAt: "" } }
-    );
-    return res.status(200).send({ message: 'User verified successfully' });
+  const { otp: storedOtp, name, hashPassword, role, createdAt } = storedOtpInfo;
+
+  // Check if OTP matches and is within the valid time frame (5 minutes)
+  if (otp === storedOtp && Date.now() - createdAt < 5 * 60 * 1000) {
+    try {
+      // Insert user into the database
+      await client.connect();
+      const database = client.db('DNK-ADVANCE-DB');
+      const usersCollection = database.collection("users");
+
+      const newUser = {
+        name,
+        email,
+        password: hashPassword,
+        role,
+        createdAt: new Date()
+      };
+      await usersCollection.insertOne(newUser);
+
+      // Clean up OTP from storage after successful verification
+      delete otpStore[email];
+      res.status(201).send({ message: 'Registration successful' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Error completing registration' });
+    } finally {
+      await client.close();
+    }
   } else {
-    return res.status(400).send({ message: 'Invalid or expired OTP' });
+    res.status(400).send({ message: 'Invalid or expired OTP' });
   }
 });
