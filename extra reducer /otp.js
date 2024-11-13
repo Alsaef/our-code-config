@@ -78,31 +78,23 @@ app.post('/api/v1/register', async (req, res) => {
 app.post('/api/v1/verify-otp', async (req, res) => {
   const { email, otp } = req.body;
 
-  const storedOtpInfo = otpStore[email];
-  if (!storedOtpInfo) {
-    return res.status(400).send({ message: 'OTP not found or expired' });
-  }
-
-  const { otp: storedOtp, name, hashPassword, role, createdAt } = storedOtpInfo;
-
-  // Check if OTP matches and is within the valid time frame (5 minutes)
-app.post('/api/v1/verify-otp', async (req, res) => {
-  const { email, otp } = req.body;
-
   try {
+    // Connect to the MongoDB database
     await client.connect();
     const database = client.db('DNK-ADVANCE-DB');
     const usersCollection = database.collection("users");
 
-    // Find user by email
+    // Find the user by email
     const user = await usersCollection.findOne({ email });
-    if (!user) return res.status(400).send({ message: 'User not found' });
+    if (!user) {
+      return res.status(400).send({ message: 'User not found' });
+    }
 
-    // Check if OTP is valid and not expired
+    // Check if OTP is correct and not expired
     if (user.otp === otp && user.otpExpiresAt > Date.now()) {
       // Update user to verified status and remove OTP fields
       await usersCollection.updateOne(
-        { email: email },
+        { email },
         { $set: { isVerified: true }, $unset: { otp: "", otpExpiresAt: "" } }
       );
       return res.status(200).send({ message: 'User verified successfully' });
@@ -110,10 +102,10 @@ app.post('/api/v1/verify-otp', async (req, res) => {
       return res.status(400).send({ message: 'Invalid or expired OTP' });
     }
   } catch (error) {
-    console.error(error);
+    console.error('Error verifying OTP:', error);
     res.status(500).send({ message: 'Server error during OTP verification' });
   } finally {
+    // Ensure the client is closed after the operation
     await client.close();
   }
 });
-
