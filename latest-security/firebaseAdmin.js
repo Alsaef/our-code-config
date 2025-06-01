@@ -1,7 +1,10 @@
 const admin = require("firebase-admin");
-//security env file 
+//security env file production 
 const decoded = Buffer.from(process.env.FB_SERVICE_KEY, 'base64').toString('utf8')
 const serviceAccount = JSON.parse(decoded);
+
+// temporary development mode
+var serviceAccount = require("./firebase-admin-key.json");
 
 // middleware
 app.use(cors());
