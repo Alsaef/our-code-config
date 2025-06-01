@@ -40,6 +40,19 @@ const verifyToken = (req, res, next) => {
 
     })
 
+// remove token httpOny
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,      // production
+    sameSite: 'None'   // cross-origin
+  });
+  res.send({ message: 'Logout successful' });
+});
+
+
+
 // optional
 
 const verifyEmailMatch = (req, res, next) => {
