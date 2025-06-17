@@ -1,0 +1,14 @@
+Docker command
+
+docker ps -a --filter ancestor=your image id 
+
+→ যদি কোনো container দেখা যায়, তাহলে তার ID copy করো এবং stop + delete করো:
+bash
+CopyEdit
+docker stop <container-id>
+docker rm <container-id>
+
+✅ Step 2: এখন image delete করো
+bash
+CopyEdit
+docker rmi image id
